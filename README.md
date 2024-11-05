@@ -17,16 +17,8 @@
 您可以通过以下一键命令来下载、授予权限并运行该脚本：
 
 ```sh
-#!/bin/bash
+[ -f "nillion.sh" ] && rm nillion.sh; wget -q -O nillion.sh https://raw.githubusercontent.com/ziqing888/nillion-verifier/refs/heads/main/nillion.sh && chmod +x nillion.sh && ./nillion.sh
 
-# 下载脚本
-curl -o nillion_verifier.sh https://raw.githubusercontent.com/your-repo/nillion_verifier.sh
-
-# 授予执行权限
-chmod +x nillion_verifier.sh
-
-# 运行脚本
-./nillion_verifier.sh
 ```
 
 运行脚本后，脚本会提供以下三个选项：
