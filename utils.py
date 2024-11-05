@@ -16,6 +16,7 @@ PURPLE_RAIN = "\033[1;35m"
 
 def rainbow_box():
     width = 60
+
     # Print top border
     for i in range(width):
         color = [RED_RAIN, ORANGE_RAIN, YELLOW_RAIN, GREEN_RAIN, CYAN_RAIN, BLUE_RAIN][i % 6]
@@ -39,3 +40,4 @@ def show(message, msg_type="success"):
         print(f"{YELLOW}{BOLD}⏳ {message}{NORMAL}")
     else:
         print(f"{GREEN}{BOLD}✅ {message}{NORMAL}")
+
