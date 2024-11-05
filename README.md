@@ -1,6 +1,5 @@
 # Nillion 验证节点设置指南
 
-## Nillion Verifier Bash Script 详细指南
 
 该指南为您提供有关如何使用 Bash 脚本安装和管理 Nillion 验证节点的详细步骤。
 
