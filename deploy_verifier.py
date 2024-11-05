@@ -29,9 +29,8 @@ def rainbow_box():
     print(RESET)
 
     # Print content and side borders
-    print(f"{RED_RAIN}║{RESET}  {CYAN_RAIN}{BOLD}🚀 nillion-验证器
- 🎮{RESET}                                       {RED_RAIN}║{RESET}")
-    print(f"{ORANGE_RAIN}║{RESET}  {BLUE}脚本由子清编写 🌐 欢迎加入 电报频道：{YELLOW}https://t.me/ksqxszq{RESET} {ORANGE_RAIN}║{RESET}")
+    print(f"""{RED_RAIN}║{RESET}  {CYAN_RAIN}{BOLD}🚀 nillion-验证器 🎮{RESET}                                       {RED_RAIN}║{RESET}""")
+    print(f"""{ORANGE_RAIN}║{RESET}  {BLUE}脚本由子清编写 🌐 欢迎加入 电报频道：{YELLOW}https://t.me/ksqxszq{RESET} {ORANGE_RAIN}║{RESET}""")
 
     # Print bottom border
     for i in range(width):
@@ -173,27 +172,4 @@ def delete_node():
         show("未找到 credentials.json 进行备份。", "error")
 
     show("正在停止并删除 Nillion Docker 容器...", "progress")
-    subprocess.run(["sudo", "docker", "stop", "nillion"], stderr=subprocess.DEVNULL, shell=True)
-    subprocess.run(["sudo", "docker", "rm", "nillion"], stderr=subprocess.DEVNULL, shell=True)
-
-    show("正在删除 verifier 节点...", "progress")
-    if os.path.isdir("nillion/verifier"):
-        os.rmdir("nillion/verifier")
-        show("verifier 节点删除成功。")
-
-
-if __name__ == "__main__":
-    rainbow_box()
-    while True:
-        print("\n1. 安装 verifier 节点")
-        print("2. 删除 verifier 节点")
-        print("3. 退出\n")
-        option = input("请选择一个选项：")
-        if option == "1":
-            install_node()
-        elif option == "2":
-            delete_node()
-        elif option == "3":
-            break
-        else:
-            show("无效的选项。请重试。", "error")
+    subprocess.run(["sudo",
