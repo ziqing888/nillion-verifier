@@ -68,6 +68,7 @@ show() {
     esac
 }
 
+# 安装所需包
 install_package() {
     local command=$1
     local name=$2
@@ -89,12 +90,13 @@ install_package() {
     fi
 }
 
+# 安装 Node.js 和配置 Nillion 节点
 install_node() {
     local credentials_path="nillion/verifier/credentials.json"
     
     if [[ -f $credentials_path ]]; then
-        show "找到已有的 credentials.json。是否备份并删除它？ (y/n)：" "progress"
-        read -p "输入 'y' 进行备份并删除，或输入其他键保留：" backup_choice
+        show "找到已有的 credentials.json。" "progress"
+        read -p "是否备份并删除它？ (y/n)： " backup_choice
         if [[ "$backup_choice" =~ ^[yY]$ ]]; then
             show "正在将 credentials.json 备份到 nillion-existing-wallet.json..." "progress"
             mv $credentials_path nillion-existing-wallet.json
@@ -125,7 +127,12 @@ install_node() {
     read -p "输入 '1' 创建新钱包，或输入 '2' 使用已有钱包：" wallet_choice
 
     if [[ "$wallet_choice" == "2" ]]; then
-        read -p "输入您的私钥：" private_key
+        read -p "请输入您的私钥（64位十六进制）：" private_key
+        # 检查私钥格式
+        if [[ ! "$private_key" =~ ^[0-9a-fA-F]{64}$ ]]; then
+            show "无效的私钥格式，请检查后重试。" "error"
+            exit 1
+        fi
         show "正在生成公钥和地址..." "progress"
         npm install @cosmjs/proto-signing
         node -e "
@@ -155,7 +162,7 @@ EOF
         rm address_and_pubkey.txt
     elif [[ "$wallet_choice" == "1" ]]; then
         show "正在创建新的 verifier 节点..." "progress"
-        docker run -v ./nillion/verifier:/var/tmp nillion/verifier:v1.0.1 initialise
+        docker run -v "$(pwd)/nillion/verifier:/var/tmp" nillion/verifier:v1.0.1 initialise
 
         echo
         echo "现在访问：https://verifier.nillion.com/verifier"
@@ -163,7 +170,7 @@ EOF
         echo "请求 faucet 到 nillion 地址：https://faucet.testnet.nillion.com"
         echo
 
-        read -p "您是否已请求 faucet？ (y/n)：" faucet_requested
+        read -p "您是否已请求 faucet？ (y/n)： " faucet_requested
         if [[ ! "$faucet_requested" =~ ^[yY]$ ]]; then
             show "请请求 faucet 后再试。" "error"
             exit 1
@@ -175,7 +182,7 @@ EOF
         echo -e "公钥：${GREEN}$(jq -r '.pub_key' $credentials_path)${NORMAL}"
         echo
 
-        read -p "您是否已在网站上输入地址和公钥？ (y/n)：" info_inputted
+        read -p "您是否已在网站上输入地址和公钥？ (y/n)： " info_inputted
         if [[ ! "$info_inputted" =~ ^[yY]$ ]]; then
             show "请输入信息后再试。" "error"
             exit 1
@@ -186,13 +193,14 @@ EOF
     fi
 
     show "正在启动 verifier 节点..." "progress"
-    docker run -d --name nillion -v ./nillion/verifier:/var/tmp nillion/verifier:v1.0.1 verify --rpc-endpoint "https://nillion-testnet-rpc.polkachu.com"
+    docker run -d --name nillion -v "$(pwd)/nillion/verifier:/var/tmp" nillion/verifier:v1.0.1 verify --rpc-endpoint "https://nillion-testnet-rpc.polkachu.com"
     show "nillion 验证节点启动成功。"
 
     show "正在显示 nillion 容器日志..." "progress"
     docker logs nillion -fn 50
 }
 
+# 删除节点
 delete_node() {
     local credentials_path="nillion/verifier/credentials.json"
     
@@ -213,17 +221,30 @@ delete_node() {
     show "verifier 节点已成功删除。"
 }
 
-while true; do
-    echo
-    echo "1. 安装 verifier 节点"
-    echo "2. 删除 verifier 节点"
-    echo "3. 退出"
-    echo
-    read -p "请选择一个选项：" option
-    case $option in
-        1) install_node ;;
-        2) delete_node ;;
-        3) exit 0 ;;
-        *) show "无效的选项。请重试。" "error" ;;
-    esac
-done
+# 主程序
+main_menu() {
+    rainbow_box
+    while true; do
+        echo
+        echo -e "${CYAN}${BOLD}请选择一个选项：${NORMAL}"
+        echo -e "${GREEN}1. 安装 verifier 节点${NORMAL}"
+        echo -e "${RED}2. 删除 verifier 节点${NORMAL}"
+        echo -e "${YELLOW}3. 退出${NORMAL}"
+        echo
+        read -p "输入选项 [1-3]: " option
+        case $option in
+            1) 
+                install_package curl "curl"
+                install_package docker "docker"
+                install_package npm "npm"
+                install_node 
+                ;;
+            2) delete_node ;;
+            3) exit 0 ;;
+            *) show "无效的选项。请重试。" "error" ;;
+        esac
+    done
+}
+
+# 运行主程序
+main_menu
