@@ -35,10 +35,13 @@ def install_node():
     show("正在创建所需目录...", "progress")
     os.makedirs("nillion/verifier", exist_ok=True)
 
-    if subprocess.call(["docker", "image", "inspect", "nillion/verifier:v1.0.1"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
-        show("正在拉取 Nillion verifier Docker 镜像...", "progress")
-        subprocess.run(["docker", "pull", "nillion/verifier:v1.0.1"], shell=True)
+    show("正在拉取 Nillion verifier Docker 镜像...", "progress")
+    result = subprocess.run(["docker", "pull", "nillion/verifier:v1.0.1"], shell=True)
+    if result.returncode != 0:
+        show("Docker 镜像拉取失败，请检查 Docker 是否正确安装和运行。", "error")
+        return
     else:
-        show("Nillion verifier Docker 镜像已存在。")
+        show("Docker 镜像拉取成功。")
 
     # 添加更多逻辑，根据已有或新建钱包进行节点安装
+
