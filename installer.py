@@ -19,5 +19,26 @@ def install_package(command, name):
         show(f"{name} 已经安装。")
 
 def install_node():
-    # Add logic for installing node, e.g., checking credentials and setting up verifier
-    pass
+    credentials_path = "nillion/verifier/credentials.json"
+    if os.path.isfile(credentials_path):
+        show("找到已有的 credentials.json。是否备份并删除它？ (y/n)：", "progress")
+        backup_choice = input("输入 'y' 进行备份并删除，或输入其他键保留：")
+        if backup_choice.lower() == 'y':
+            show("正在将 credentials.json 备份到 nillion-existing-wallet.json...", "progress")
+            os.rename(credentials_path, "nillion-existing-wallet.json")
+            show("备份成功。")
+            os.remove(credentials_path)
+            show("已有的 credentials.json 已删除。")
+        else:
+            show("保留已有的 credentials.json。")
+
+    show("正在创建所需目录...", "progress")
+    os.makedirs("nillion/verifier", exist_ok=True)
+
+    if subprocess.call(["docker", "image", "inspect", "nillion/verifier:v1.0.1"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
+        show("正在拉取 Nillion verifier Docker 镜像...", "progress")
+        subprocess.run(["docker", "pull", "nillion/verifier:v1.0.1"], shell=True)
+    else:
+        show("Nillion verifier Docker 镜像已存在。")
+
+    # 添加更多逻辑，根据已有或新建钱包进行节点安装
