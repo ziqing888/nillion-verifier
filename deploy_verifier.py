@@ -39,6 +39,7 @@ def rainbow_box():
     print(RESET)
 
 
+
 def show(message, msg_type="success"):
     if msg_type == "error":
         print(f"{RED}{BOLD}❌ {message}{NORMAL}")
