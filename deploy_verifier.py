@@ -172,4 +172,5 @@ def delete_node():
         show("未找到 credentials.json 进行备份。", "error")
 
     show("正在停止并删除 Nillion Docker 容器...", "progress")
-    subprocess.run(["sudo",
+    subprocess.run(["sudo", "docker", "stop", "nillion"], stderr=subprocess.DEVNULL, shell=True)
+    subprocess.run
