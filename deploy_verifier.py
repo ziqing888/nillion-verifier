@@ -12,7 +12,7 @@ if __name__ == "__main__":
         if option == "1":
             install_node()
         elif option == "2":
-            # Delete node function can also be imported from installer.py
+            # Delete node function可以在installer.py中实现
             pass
         elif option == "3":
             break
